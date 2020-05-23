@@ -1,0 +1,33 @@
+{
+	"importType": "sendToBackOfficeSystem",
+	"books": [
+		{
+			"title": "ASP.NET Core 3 and Angular 9",
+			"pageCount": 732,
+			"authors": [
+				{
+					"name": "Valerio De Sanctis"
+				}
+			]
+		},
+		{
+			"title": "Hands-On Domain-Driven Design with .NET Core",
+			"pageCount": 446,
+			"authors": [
+				{
+					"name": "Alexey Zimarev"
+				}
+			]
+		},
+		{
+			"title": "C# 8.0 and .NET Core 3.0 – Modern Cross-Platform Development",
+			"pageCount": 818,
+			"authors": [
+				{
+					"name": "Mark J. Price"
+				}
+			]
+		}
+	]
+
+}

@@ -1,0 +1,24 @@
+{
+	"importType": "informBookstore",
+	"books": [
+		{
+			"title": "ASP.NET Core 3 and Angular 9",
+			"pageCount": 732,
+			"authors": [
+				{
+					"name": "Valerio De Sanctis"
+				}
+			]
+		},
+		{
+			"title": "Hands-On Domain-Driven Design with .NET Core",
+			"pageCount": 446,
+			"authors": [
+				{
+					"name": "Alexey Zimarev"
+				}
+			]
+		}
+	]
+
+}
