@@ -19,6 +19,7 @@ namespace LoadingMultipleConfig
             
             var importResult = container.Resolve<IImportProcess>().DoImport();
 
+            // Show import result
             foreach (var item in importResult)
             {
                 Console.WriteLine(item);
@@ -30,8 +31,8 @@ namespace LoadingMultipleConfig
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<LoadData>().As<ILoadData>().InstancePerLifetimeScope();
-            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerLifetimeScope();
+            builder.RegisterType<LoadData>().As<ILoadData>().InstancePerDependency();
+            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerDependency();
         }
     }
 

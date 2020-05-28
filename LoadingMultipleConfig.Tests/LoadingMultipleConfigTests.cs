@@ -10,30 +10,13 @@ namespace LoadingMultipleConfig.Tests
 {
     public class LoadingMultipleConfigTests
     {
-        public void Loading_Multiple_Config_Test_Should_Be_Ok()
-        {
-            1.Should().Equals(1);
-        }
-
         [TestCase(ImportType.InformBookstore, "{\"importType\":\"informBookstore\",\"books\":[{\"title\":\"ASP.NET Core 3 and Angular 9\",\"pageCount\":732,\"authors\":[{\"name\":\"Valerio De Sanctis\"}]},{\"title\":\"Hands-On Domain-Driven Design with .NET Core\",\"pageCount\":446,\"authors\":[{\"name\":\"Alexey Zimarev\"}]}]}")]
         [TestCase(ImportType.SaveInDb, "{\"importType\":\"saveInDb\",\"books\":[{\"title\":\"ASP.NET Core 3 and Angular 9\",\"pageCount\":732,\"authors\":[{\"name\":\"Valerio De Sanctis\"}]},{\"title\":\"Hands-On Domain-Driven Design with .NET Core\",\"pageCount\":446,\"authors\":[{\"name\":\"Alexey Zimarev\"}]}]}")]
         [TestCase(ImportType.SendToBackOfficeSystem, "{\"importType\":\"sendToBackOfficeSystem\",\"books\":[{\"title\":\"ASP.NET Core 3 and Angular 9\",\"pageCount\":732,\"authors\":[{\"name\":\"Valerio De Sanctis\"}]},{\"title\":\"Hands-On Domain-Driven Design with .NET Core\",\"pageCount\":446,\"authors\":[{\"name\":\"Alexey Zimarev\"}]}]}")]
         public void Import_Type_Property_Should_Indicate_How_To_Import_Books(ImportType importType, string jsonData)
         {
             // Arrange
-            var mock = new Mock<ILoadData>();
-            mock.Setup(c => c.ReadData(string.Empty)).Returns(jsonData);
-
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(mock.Object).As<ILoadData>();
-            
-            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerLifetimeScope();
-            
-            builder.RegisterType<AppConfiguration>()
-                .WithParameter(new TypedParameter(typeof(string), string.Empty))
-                .SingleInstance();
-            
-            var container = builder.Build();
+            var container = BuildContainer(jsonData);
             
             // Act
             var importResult = container.Resolve<IImportProcess>().DoImport();
@@ -55,20 +38,7 @@ namespace LoadingMultipleConfig.Tests
         {
             // Arrange
             string jsonData = "{\"importType\":\"saveInDb\"}";
-            
-            var mock = new Mock<ILoadData>();
-            mock.Setup(c => c.ReadData(string.Empty)).Returns(jsonData);
-
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(mock.Object).As<ILoadData>();
-            
-            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerLifetimeScope();
-            
-            builder.RegisterType<AppConfiguration>()
-                .WithParameter(new TypedParameter(typeof(string), string.Empty))
-                .SingleInstance();
-            
-            var container = builder.Build();
+            var container = BuildContainer(jsonData);
             
             // Act
             var importResult = container.Resolve<IImportProcess>().DoImport();
@@ -84,19 +54,7 @@ namespace LoadingMultipleConfig.Tests
         public void Import_Should_Return_A_List_Of_Imported_Books(int numberOfImportedBooks, string jsonData)
         {
             // Arrange
-            var mock = new Mock<ILoadData>();
-            mock.Setup(c => c.ReadData(string.Empty)).Returns(jsonData);
-
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(mock.Object).As<ILoadData>();
-            
-            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerLifetimeScope();
-            
-            builder.RegisterType<AppConfiguration>()
-                .WithParameter(new TypedParameter(typeof(string), string.Empty))
-                .SingleInstance();
-            
-            var container = builder.Build();
+            var container = BuildContainer(jsonData);
             
             // Act
             var importResult = container.Resolve<IImportProcess>().DoImport();
@@ -105,6 +63,23 @@ namespace LoadingMultipleConfig.Tests
             
             // added 1 because the first line is the import type description
             importResult.Should().HaveCount(numberOfImportedBooks + 1);
+        }
+        
+        private IContainer BuildContainer(string jsonData)
+        {
+            var loadDataMock = new Mock<ILoadData>();
+            loadDataMock.Setup(c => c.ReadData(string.Empty)).Returns(jsonData);
+            
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(loadDataMock.Object).As<ILoadData>();
+            
+            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerDependency();
+            
+            builder.RegisterType<AppConfiguration>()
+                .WithParameter(new TypedParameter(typeof(string), string.Empty))
+                .SingleInstance();
+            
+            return builder.Build();
         }
     }
 }
