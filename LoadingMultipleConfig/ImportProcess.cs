@@ -1,16 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using LoadingMultipleConfig.Configuration;
-using LoadingMultipleConfig.Configuration.Models;
+using LoadingMultipleConfig.Import;
 
 namespace LoadingMultipleConfig
 {
     public class ImportProcess : IImportProcess
     {
         private readonly AppConfiguration _config;
+        private readonly IImport _import;
 
-        public ImportProcess(AppConfiguration config)
-            => _config = config;
+        public ImportProcess(AppConfiguration config, IImport import)
+        {
+            _config = config;
+            _import = import;
+        }
 
         public IEnumerable<string> DoImport()
         {
@@ -19,20 +23,7 @@ namespace LoadingMultipleConfig
                 return new List<string> { "No data to import!" };
             }
 
-            string taskToDo = _config.Config.ImportType switch
-            {
-                ImportType.InformBookstore => "The bookstore will be informed of the following books:",
-                ImportType.SaveInDb => "The following books have been saved in the database:",
-                ImportType.SendToBackOfficeSystem => "The following books have been sent to the back office system:",
-                _ => ":("
-            };
-
-            var resultList = new List<string> { taskToDo };
-
-            foreach (var book in _config.Config.Books)
-            {
-                resultList.Add(book?.Title);
-            }
+            List<string> resultList =  _import.Import(_config.Config.Books);
 
             return resultList;
         }

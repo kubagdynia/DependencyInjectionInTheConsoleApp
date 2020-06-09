@@ -3,6 +3,7 @@ using Autofac;
 using FluentAssertions;
 using LoadingMultipleConfig.Configuration;
 using LoadingMultipleConfig.Configuration.Models;
+using LoadingMultipleConfig.Import;
 using Moq;
 using NUnit.Framework;
 
@@ -73,8 +74,15 @@ namespace LoadingMultipleConfig.Tests
             var builder = new ContainerBuilder();
             builder.RegisterInstance(loadDataMock.Object).As<ILoadData>();
             
-            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerDependency();
-            
+            builder.RegisterType<ImportInformBookstore>().Keyed<IImport>(ImportType.InformBookstore);
+            builder.RegisterType<ImportSaveInDb>().Keyed<IImport>(ImportType.SaveInDb);
+            builder.RegisterType<ImportSendToBackOfficeSystem>().Keyed<IImport>(ImportType.SendToBackOfficeSystem);
+
+            builder.Register(c =>
+                    new ImportProcess(c.Resolve<AppConfiguration>(),
+                        c.ResolveKeyed<IImport>(c.Resolve<AppConfiguration>().Config.ImportType))).As<IImportProcess>()
+                .InstancePerDependency();
+
             builder.RegisterType<AppConfiguration>()
                 .WithParameter(new TypedParameter(typeof(string), string.Empty))
                 .SingleInstance();
