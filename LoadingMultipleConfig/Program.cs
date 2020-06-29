@@ -39,10 +39,7 @@ namespace LoadingMultipleConfig
             builder.RegisterType<ImportSaveInDb>().Keyed<IImport>(ImportType.SaveInDb);
             builder.RegisterType<ImportSendToBackOfficeSystem>().Keyed<IImport>(ImportType.SendToBackOfficeSystem);
 
-            builder.Register(c =>
-                    new ImportProcess(c.Resolve<AppConfiguration>(),
-                        c.ResolveKeyed<IImport>(c.Resolve<AppConfiguration>().Config.ImportType))).As<IImportProcess>()
-                .InstancePerDependency();
+            builder.RegisterType<ImportProcess>().As<IImportProcess>().InstancePerDependency();
         }
     }
 

@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac.Features.Indexed;
 using LoadingMultipleConfig.Configuration;
+using LoadingMultipleConfig.Configuration.Models;
 using LoadingMultipleConfig.Import;
 
 namespace LoadingMultipleConfig
@@ -8,12 +11,12 @@ namespace LoadingMultipleConfig
     public class ImportProcess : IImportProcess
     {
         private readonly AppConfiguration _config;
-        private readonly IImport _import;
+        private readonly Func<List<Book>, IImport> _imports;
 
-        public ImportProcess(AppConfiguration config, IImport import)
+        public ImportProcess(AppConfiguration config,  IIndex<ImportType, Func<List<Book>, IImport>> imports)
         {
             _config = config;
-            _import = import;
+            _imports  = imports[config.Config.ImportType];
         }
 
         public IEnumerable<string> DoImport()
@@ -23,7 +26,7 @@ namespace LoadingMultipleConfig
                 return new List<string> { "No data to import!" };
             }
 
-            List<string> resultList =  _import.Import(_config.Config.Books);
+            List<string> resultList = _imports(_config.Config.Books).Import();
 
             return resultList;
         }

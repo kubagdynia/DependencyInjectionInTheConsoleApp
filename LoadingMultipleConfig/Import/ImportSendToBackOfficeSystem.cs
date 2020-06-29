@@ -5,11 +5,16 @@ namespace LoadingMultipleConfig.Import
 {
     public class ImportSendToBackOfficeSystem : IImport
     {
-        public List<string> Import(List<Book> books)
+        private readonly List<Book> _books;
+        public ImportSendToBackOfficeSystem(List<Book> books)
+        {
+            _books = books;
+        }
+        public List<string> Import()
         {
             var resultList = new List<string> { "The following books have been sent to the back office system:" };
 
-            foreach (var book in books)
+            foreach (var book in _books)
             {
                 resultList.Add(book?.Title);
             }
